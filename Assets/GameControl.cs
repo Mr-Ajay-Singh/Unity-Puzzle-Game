@@ -10,7 +10,7 @@ public class GameControl : MonoBehaviour
     private GameObject parentObject;
 
     [SerializeField]
-    private GameObject[] winText;
+    private GameObject winText;
 
     public static bool youWin;
 
@@ -19,8 +19,7 @@ public class GameControl : MonoBehaviour
     void Start(){
         childArray = parentObject.GetComponentsInChildren<Transform>(true);
 
-        winText[0].SetActive(false);
-        winText[1].SetActive(false);
+        winText.SetActive(false);
         int parentIndex = System.Array.IndexOf(childArray, parentObject.transform);
         childArray = childArray.Where((_, index) => index != parentIndex).ToArray();
 
@@ -45,8 +44,7 @@ public class GameControl : MonoBehaviour
         Debug.Log("Working");
         youWin = true;
 
-        winText[0].SetActive(true);
-        winText[1].SetActive(true);
+        winText.SetActive(true);
     }
     
     
