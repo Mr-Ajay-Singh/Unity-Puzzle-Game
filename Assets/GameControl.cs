@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class GameControl : MonoBehaviour
 {
-    
+
+    int selectedImageIndex = 0;
+
     [SerializeField]
     private GameObject parentObject;
 
@@ -17,11 +19,22 @@ public class GameControl : MonoBehaviour
     Transform[] childArray;
 
     void Start(){
-        childArray = parentObject.GetComponentsInChildren<Transform>(true);
+        Transform[] value = parentObject.GetComponentsInChildren<Transform>();
+        int parent = System.Array.IndexOf(value, parentObject);
+        value = value.Where((_, index) => index != parent).ToArray();
+
+
+        Transform[] internalImage = value[0].GetComponentsInChildren<Transform>();
+        int parent2 = System.Array.IndexOf(internalImage, value[0]);
+        internalImage = internalImage.Where((_, index) => index != parent2).ToArray();
+
+        childArray = internalImage[1].GetComponentsInChildren<Transform>();
 
         winText.SetActive(false);
-        int parentIndex = System.Array.IndexOf(childArray, parentObject.transform);
+        int parentIndex = System.Array.IndexOf(childArray, internalImage[1].transform);
         childArray = childArray.Where((_, index) => index != parentIndex).ToArray();
+
+        Debug.Log("Start " + childArray);
 
         foreach (Transform child in childArray)
         {
