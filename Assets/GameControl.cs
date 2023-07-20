@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameControl : MonoBehaviour
 {
@@ -12,54 +15,101 @@ public class GameControl : MonoBehaviour
     private GameObject parentObject;
 
     [SerializeField]
-    private GameObject winText;
+    private GameObject gameCanvas;
 
     public static bool youWin;
 
     Transform[] childArray;
 
     void Start(){
-        Transform[] value = parentObject.GetComponentsInChildren<Transform>();
-        int parent = System.Array.IndexOf(value, parentObject);
-        value = value.Where((_, index) => index != parent).ToArray();
 
 
-        Transform[] internalImage = value[0].GetComponentsInChildren<Transform>();
-        int parent2 = System.Array.IndexOf(internalImage, value[0]);
-        internalImage = internalImage.Where((_, index) => index != parent2).ToArray();
+        
+        Transform[] value = GetImmediateChildren(parentObject.transform);
 
-        childArray = internalImage[1].GetComponentsInChildren<Transform>();
 
-        winText.SetActive(false);
-        int parentIndex = System.Array.IndexOf(childArray, internalImage[1].transform);
-        childArray = childArray.Where((_, index) => index != parentIndex).ToArray();
+        Transform[] internalImage = GetImmediateChildren(value[selectedImageIndex]);
+        DisableOtherChildObjects(value[selectedImageIndex],value);
 
-        Debug.Log("Start " + childArray);
+
+        childArray = GetImmediateChildren(internalImage[0]);
+
+        gameCanvas.SetActive(false);
+
 
         foreach (Transform child in childArray)
         {
-            
             float randomRotation = Random.Range(1, 4) * 90f;
 
-            Debug.Log("Start " + randomRotation);
             child.rotation = Quaternion.Euler(0f, 0f, randomRotation);
         }
         youWin = false;
+        ClickListner();
     }
+
 
     void Update(){
 
         foreach (Transform child1 in childArray)
         {
             float rotationZ = child1.rotation.eulerAngles.z;
-            if(Mathf.Abs(rotationZ) > 0.1f) return;
+
+            if (Mathf.Abs(rotationZ) > 0.01f) return;
         }
-        Debug.Log("Working");
         youWin = true;
 
-        winText.SetActive(true);
+        gameCanvas.SetActive(true);
     }
-    
-    
+
+
+    private Transform[] GetImmediateChildren(Transform parentTransform)
+    {
+        int childCount = parentTransform.childCount;
+
+        Transform[] children = new Transform[childCount];
+
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform childTransform = parentTransform.GetChild(i);
+            children[i] = childTransform.gameObject.transform;
+
+        }
+
+        return children;
+    }
+
+
+    private void DisableOtherChildObjects(Transform currentObjectTransform, Transform[] parentTransform)
+    {
+        int childCount = parentTransform.Length;
+
+
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform childTransform = parentTransform[i];
+            if (parentTransform[i] != currentObjectTransform)
+            {
+                parentTransform[i].gameObject.SetActive(false);
+            }
+
+        }
+        currentObjectTransform.gameObject.SetActive(true);
+    }
+
+    private void ClickListner()
+    {
+        //gameCanvas.transform.Find("NextButton").gameObject;
+
+        Debug.Log("Start5 " + gameCanvas.transform.Find("Congratulations").Find("NextButton").gameObject.name);
+        Button button  = gameCanvas.transform.Find("Congratulations").Find("NextButton").gameObject.GetComponent<Button>();
+        button.onClick.AddListener(OnButtonClick);
+    }
+
+    private void OnButtonClick()
+    {
+        Debug.Log("Start4 "+ "Working112");
+        selectedImageIndex = selectedImageIndex + 1;
+        Start();
+    }
 
 }
