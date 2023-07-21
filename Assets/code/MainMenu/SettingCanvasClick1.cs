@@ -34,7 +34,7 @@ public class SettingCanvasClick1 : MonoBehaviour, IPointerClickHandler
         //{
         //    yield return null;
         //}
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         // Animation completed, continue with the function
 
