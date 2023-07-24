@@ -57,11 +57,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: LuckiestGuy-Regular SDF
+  m_Name: LuckiestGuy-Advance
   m_EditorClassIdentifier: 
-  hashCode: -1536617929
+  hashCode: 1572636134
   material: {fileID: 1107323052558959303}
-  materialHashCode: 684492983
+  materialHashCode: -343137402
   m_Version: 1.1.0
   m_SourceFontFileGUID: b00336d093da6d947922c6c5cb29812f
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: b00336d093da6d947922c6c5cb29812f, type: 3}
