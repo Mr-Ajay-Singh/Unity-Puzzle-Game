@@ -27,6 +27,16 @@ public class GameControl : MonoBehaviour
     Transform[] childArray;
     KeyValuePair<float, float> scoreDone = new KeyValuePair<float, float>(3, 5);
 
+    AudioSource audioSource;
+
+    [SerializeField]
+    public AudioClip[] audioClips;
+
+
+    private void Awake()
+    {
+        //selectedImageIndex = PlayerPrefs.GetInt("LevelSelected", 0);
+    }
 
 
 
@@ -35,7 +45,9 @@ public class GameControl : MonoBehaviour
 
         
         Transform[] value = GetImmediateChildren(parentObject.transform);
-
+        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource.clip = audioClips[0];
+        audioSource.Play();
 
         Transform[] internalImage = GetImmediateChildren(value[selectedImageIndex]);
         DisableOtherChildObjects(value[selectedImageIndex],value);
@@ -82,7 +94,9 @@ public class GameControl : MonoBehaviour
     private void GameCanvasActions()
     {
         gameCanvas.SetActive(true);
-
+        audioSource.Stop();
+        audioSource.clip = audioClips[1];
+        audioSource.Play();
         progress = gameCanvas.transform.Find("Progress").Find("ProgressContainer").Find("FilledProgress").gameObject.GetComponent<RectTransform>();
 
         //RectTransform congratulations = gameCanvas.transform.Find("Congratulations").Find("CongratulationsImage").gameObject.GetComponent<RectTransform>();
@@ -173,10 +187,14 @@ public class GameControl : MonoBehaviour
     {
         Debug.Log("Start4 "+ "Working112");
 
+        AudioSource buttonAudioSource = gameCanvas.transform.Find("Congratulations").Find("NextButton").gameObject.gameObject.GetComponent<AudioSource>();
+        buttonAudioSource.Play();
+
+
         animator[0].SetTrigger("run");
         animator[1].SetTrigger("run");
-        gameCanvas.SetActive(false);
         StartCoroutine(WaitForAnimation());
+        gameCanvas.SetActive(false);
 
         //animator[0].SetTrigger("run");
         //animator[1].SetTrigger("run");
@@ -217,6 +235,7 @@ public class GameControl : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         selectedImageIndex = selectedImageIndex + 1;
+        PlayerPrefs.SetInt("LevelSelected", selectedImageIndex);
         Start();
 
     }
