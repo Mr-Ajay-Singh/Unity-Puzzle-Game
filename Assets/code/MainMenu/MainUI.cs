@@ -10,6 +10,9 @@ public class MainUI : MonoBehaviour
     [SerializeField]
     GameObject gameCanvas;
 
+    [SerializeField]
+    GameObject settingCanvas;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,9 +47,14 @@ public class MainUI : MonoBehaviour
             }));
         });
 
+
         var settinButton = gameCanvas.transform.Find("Setting").gameObject.GetComponent<Button>();
         settinButton.onClick.AddListener(() => {
             settinButton.gameObject.GetComponent<AudioSource>().Play();
+            settingCanvas.SetActive(true);
+            var settingBoard = settingCanvas.transform.Find("SettingBoard").GetComponent<RectTransform>();
+            settingBoard.localScale = new Vector2(0.5f, 0.5f);
+            LeanTween.scale(settingBoard, new Vector2(1f, 1f), 1f).setEaseInOutQuart();
         });
 
 

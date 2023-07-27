@@ -1,48 +1,71 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class SettingButtonClick : MonoBehaviour
 {
+    [SerializeField]
+    Sprite[] onSprite;
+    [SerializeField]
+    Sprite[] offSprite;
 
-    [SerializeField]
-    public Animator animator1;
-    [SerializeField]
-    public Animator animator2;
 
     // Start is called before the first frame update
-    private void OnMouseDown()
+    private void Start()
     {
-        PlayAnimationAndContinue();
+        //onSprite = new Sprite[2];
+        //offSprite = new Sprite[2];
+
+        //onSprite[0] = Resources.Load<Sprite>("On");
+        //onSprite[1] = Resources.Load<Sprite>("GUL_7");
+
+        //offSprite[0] = Resources.Load<Sprite>("Off");
+       // offSprite[1] = Resources.Load<Sprite>("Group 1");
+
+        InitFunction();
+        HandleSwitches("Music");
+        HandleSwitches("Audio");
+        HandleSwitches("Vibration");
     }
 
-    private IEnumerator PlayAnimationCoroutine()
+    private void HandleSwitches(string swtich)
     {
-        // Play the animation
+        var musicSwitchBack = gameObject.transform.Find("SettingBoard").Find(swtich).Find("Switch");
 
-        animator1.SetTrigger("run");
-        animator2.SetTrigger("run");
+        var musicSwitchText = musicSwitchBack.Find("SwitchStatus");
 
-        // Wait for the animation to complete
-        //while (animator1.GetCurrentAnimatorStateInfo(0).IsName("SlideInAnimation2") && animator1.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
-        //{
-        //    yield return null;
-        // }
-        //while (animator2.GetCurrentAnimatorStateInfo(0).IsName("SlideInAnimation") && animator2.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
-        //{
-        //    yield return null;
-        //}
-        yield return new WaitForSeconds(1f);
+        musicSwitchBack.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            var isMusicActive = PlayerPrefs.GetInt(swtich, 1);
+            if (isMusicActive == 1)
+            {
+                musicSwitchText.GetComponent<Image>().sprite = offSprite[0];
+                musicSwitchBack.GetComponent<Image>().sprite = offSprite[1];
+                PlayerPrefs.SetInt(swtich, 0);
+            }
+            else
+            {
+                musicSwitchText.GetComponent<Image>().sprite = onSprite[0];
+                musicSwitchBack.GetComponent<Image>().sprite = onSprite[1];
+                PlayerPrefs.SetInt(swtich, 1);
+            }
+        });
 
-        // Animation completed, continue with the function
-
-        SceneManager.LoadScene(1);
     }
 
-    public void PlayAnimationAndContinue()
+    private void InitFunction()
     {
-        StartCoroutine(PlayAnimationCoroutine());
-    }
+        var settingBoard = gameObject.transform.Find("SettingBoard");
 
+        var closeButton = settingBoard.Find("SettingBoardClose").GetComponent<Button>();
+        closeButton.onClick.AddListener(() => {
+            LeanTween.scale(settingBoard.gameObject, new Vector2(0.5f, 0.5f), 1f).setEaseInQuart().setOnComplete(()=>{
+                gameObject.SetActive(false);
+            });
+        });
+    }
 }
