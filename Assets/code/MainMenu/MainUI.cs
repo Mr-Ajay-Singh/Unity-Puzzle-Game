@@ -40,11 +40,10 @@ public class MainUI : MonoBehaviour
         var nextButton = gameCanvas.transform.Find("NextButton").gameObject.GetComponent<Button>();
         nextButton.onClick.AddListener(() => {
             nextButton.gameObject.GetComponent<AudioSource>().Play();
-            //LeanTween.scale(gameCanvas, new Vector2(1f, 1f), 1f);
-            StartCoroutine(waitForTime(1, () =>
+            LeanTween.scale(nextButton.gameObject, new Vector2(0.15f, 0.15f), 1f).setEasePunch().setOnComplete(() =>
             {
                 SceneManager.LoadScene(1);
-            }));
+            });
         });
 
 
@@ -64,12 +63,6 @@ public class MainUI : MonoBehaviour
     void Update()
     {
         
-    }
-
-    IEnumerator waitForTime(float time,Action action)
-    {
-        yield return new WaitForSeconds(time); 
-        action();
     }
 
 }
