@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,10 +9,27 @@ using UnityEngine.UI;
 public class InGameDetailUIScript : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    private TextMeshProUGUI levelText;
+
     void Start()
     {
         InitData();
         InitPauseMenu();
+        InitCoinCount();
+        InitGlobalUI();
+        //InitHelpClicks();
+    }
+
+    private void InitGlobalUI()
+    {
+        levelText = gameObject.transform.Find("InGameCanvas").Find("LevelText").GetComponent<TextMeshProUGUI>();
+    }
+
+    private void InitCoinCount()
+    {
+        var cointText = gameObject.transform.Find("InGameCanvas").Find("CoinsCollection").Find("CoinText").GetComponent<TextMeshProUGUI>();
+        cointText.SetText(InitPrefsData.getInt(InitPrefsData.coins).ToString());
     }
 
     private void InitPauseMenu()
@@ -46,7 +64,7 @@ public class InGameDetailUIScript : MonoBehaviour
         pauseButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             pauseMenu.gameObject.SetActive(true);
-            LeanTween.scale(pauseMenuBoard.gameObject, new Vector2(1.8f, 1.8f), 1f).setEaseInElastic();
+            LeanTween.scale(pauseMenuBoard.gameObject, new Vector2(1.2f, 1.2f), 1f).setEasePunch();
 
         });
     }
@@ -54,6 +72,12 @@ public class InGameDetailUIScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        InitCoinCount();
+        SetLeveText();
+    }
+
+    private void SetLeveText()
+    {
+        levelText.SetText("Level : "+InitPrefsData.getInt(InitPrefsData.level).ToString());
     }
 }

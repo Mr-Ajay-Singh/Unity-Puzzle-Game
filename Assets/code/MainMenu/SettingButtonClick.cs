@@ -27,32 +27,49 @@ public class SettingButtonClick : MonoBehaviour
        // offSprite[1] = Resources.Load<Sprite>("Group 1");
 
         InitFunction();
-        HandleSwitches("Music");
-        HandleSwitches("Audio");
-        HandleSwitches("Vibration");
+        HandleSwitches("Music",InitPrefsData.isMusicOn);
+        HandleSwitches("Audio",InitPrefsData.isAudioOn);
+        //HandleSwitches("Vibration");
     }
 
-    private void HandleSwitches(string swtich)
+    private void HandleSwitches(string swtich,string prefs)
     {
         var mySwitch = gameObject.transform.Find("SettingBoard").Find(swtich).Find("Switch");
 
         var musicSwitchText = mySwitch.Find("SwitchStatus");
 
+
+        var isSwitchActive = InitPrefsData.getInt(prefs);
+
+        if (isSwitchActive == 1)
+        {
+            musicSwitchText.GetComponent<Image>().sprite = onSprite[0];
+            mySwitch.GetComponent<Image>().sprite = onSprite[1];
+            InitPrefsData.setInt(prefs, 1);
+        }
+        else
+        {
+            musicSwitchText.GetComponent<Image>().sprite = offSprite[0];
+            mySwitch.GetComponent<Image>().sprite = offSprite[1];
+            InitPrefsData.setInt(prefs, 0);
+        }
+
+
         mySwitch.GetComponent<Button>().onClick.AddListener(() =>
         {
-            mySwitch.GetComponent<AudioSource>().Play();
-            var isMusicActive = PlayerPrefs.GetInt(swtich, 1);
-            if (isMusicActive == 1)
+            CommonMusicPlayer.play(mySwitch.GetComponent<AudioSource>());
+            isSwitchActive = InitPrefsData.getInt(prefs);
+            if (isSwitchActive == 1)
             {
                 musicSwitchText.GetComponent<Image>().sprite = offSprite[0];
                 mySwitch.GetComponent<Image>().sprite = offSprite[1];
-                PlayerPrefs.SetInt(swtich, 0);
+                InitPrefsData.setInt(prefs, 0);
             }
             else
             {
                 musicSwitchText.GetComponent<Image>().sprite = onSprite[0];
                 mySwitch.GetComponent<Image>().sprite = onSprite[1];
-                PlayerPrefs.SetInt(swtich, 1);
+                InitPrefsData.setInt(prefs, 1);
             }
         });
 
@@ -64,7 +81,7 @@ public class SettingButtonClick : MonoBehaviour
 
         var closeButton = settingBoard.Find("SettingBoardClose").GetComponent<Button>();
         closeButton.onClick.AddListener(() => {
-            closeButton.GetComponent<AudioSource>().Play();
+            CommonMusicPlayer.play(closeButton.GetComponent<AudioSource>());
             LeanTween.scale(settingBoard.gameObject, new Vector2(0.5f, 0.5f), 1f).setEaseInQuart().setOnComplete(()=>{
                 gameObject.SetActive(false);
             });

@@ -21,6 +21,12 @@ public class GameControl : MonoBehaviour
     [SerializeField]
     private Animator[] animator;
 
+    [SerializeField]
+    private Button helpButton;
+
+    [SerializeField]
+    private Material imageAlterMaterial;
+
     public static bool youWin;
     public static bool isFirstTimeInitialised;
 
@@ -31,11 +37,14 @@ public class GameControl : MonoBehaviour
 
     [SerializeField]
     public AudioClip[] audioClips;
+    int currentCoinsCount = 0;
 
 
     private void Awake()
     {
-        //selectedImageIndex = PlayerPrefs.GetInt("LevelSelected", 0);
+        InitPrefsData.initPrefs();
+        currentCoinsCount = InitPrefsData.getInt(InitPrefsData.coins);
+        InitHelpClicks();
     }
 
 
@@ -47,7 +56,7 @@ public class GameControl : MonoBehaviour
         Transform[] value = GetImmediateChildren(parentObject.transform);
         audioSource = gameObject.GetComponent<AudioSource>();
         audioSource.clip = audioClips[0];
-        audioSource.Play();
+        CommonMusicPlayer.playMusic(audioSource);
 
         Transform[] internalImage = GetImmediateChildren(value[selectedImageIndex]);
         DisableOtherChildObjects(value[selectedImageIndex],value);
@@ -73,6 +82,8 @@ public class GameControl : MonoBehaviour
 
     void Update(){
 
+        HelpButtonClick();
+
         foreach (Transform child1 in childArray)
         {
             float rotationZ = child1.rotation.eulerAngles.z;
@@ -90,29 +101,33 @@ public class GameControl : MonoBehaviour
         }
     }
 
+    private void HelpButtonClick()
+    {
+        
+    }
+
     RectTransform progress;
     private void GameCanvasActions()
     {
         gameCanvas.SetActive(true);
         audioSource.Stop();
         audioSource.clip = audioClips[1];
-        audioSource.Play();
+        CommonMusicPlayer.playMusic(audioSource);
+
         progress = gameCanvas.transform.Find("Progress").Find("ProgressContainer").Find("FilledProgress").gameObject.GetComponent<RectTransform>();
 
-        //RectTransform congratulations = gameCanvas.transform.Find("Congratulations").Find("CongratulationsImage").gameObject.GetComponent<RectTransform>();
-        //congratulations.localScale = new Vector2(0.8f, 0.8f);
-        //LeanTween.scale(congratulations, new Vector2(1f, 1f), 1.5f).setDelay(.5f).setEase(LeanTweenType.easeOutElastic);
-        //LeanTween.move(congratulations, new Vector2(congratulations.localPosition.x, congratulations.localPosition.y + 30f), 1.5f).setDelay(1f).setEase(LeanTweenType.easeInCubic);
 
-
-        StartCoroutine(ScaleRectTransformAnimation());
+        //StartCoroutine(ScaleRectTransformAnimation());
+        var levelCompleted = InitPrefsData.getInt(InitPrefsData.level) % 10;
+        if (levelCompleted == 0) levelCompleted = 10;
+        LeanTween.scaleX(progress.gameObject, levelCompleted/10, 1f).setEaseInCubic();
 
         Debug.Log("==>" + progress.name);
 
         TextMeshProUGUI progressText = gameCanvas.transform.Find("Progress").Find("ProgressText").gameObject.GetComponent<TextMeshProUGUI>();
 
         Debug.Log("==>" + progressText.name);
-        progressText.SetText(scoreDone.Key + " / " + scoreDone.Value);
+        progressText.SetText(levelCompleted + " / " + 10);
     }
 
     private IEnumerator ScaleRectTransformAnimation()
@@ -188,8 +203,8 @@ public class GameControl : MonoBehaviour
         Debug.Log("Start4 "+ "Working112");
 
         AudioSource buttonAudioSource = gameCanvas.transform.Find("Congratulations").Find("NextButton").gameObject.gameObject.GetComponent<AudioSource>();
-        buttonAudioSource.Play();
-
+        CommonMusicPlayer.play(buttonAudioSource);
+       
 
         animator[0].SetTrigger("run");
         animator[1].SetTrigger("run");
@@ -207,37 +222,56 @@ public class GameControl : MonoBehaviour
     {
         animator[0].SetTrigger("rev");
         animator[1].SetTrigger("rev");
-        //StartCoroutine(WaitForAnimation());
-    }
-
-    private IEnumerator WaitForAnimation(Animation animation)
-    {
-        do
-        {
-            yield return null;
-        } while (animation.isPlaying);
     }
 
 
     private IEnumerator WaitForAnimation()
     {
-        // Wait until the animation is no longer playing
-        //while (animator[0].GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
-        //{
-        //    yield return null;
-        //}
-
-        //while (animator[1].GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
-        //{
-        //    yield return null;
-        //}
 
         yield return new WaitForSeconds(3f);
 
         selectedImageIndex = selectedImageIndex + 1;
-        PlayerPrefs.SetInt("LevelSelected", selectedImageIndex);
+        InitPrefsData.setInt(InitPrefsData.level, selectedImageIndex);
         Start();
 
     }
 
+    private void InitHelpClicks()
+    {
+
+        helpButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            var getCoins = InitPrefsData.getInt(InitPrefsData.level); ;
+            InitSolveOneBlock();
+            if (getCoins >= 10)
+            {
+
+                InitPrefsData.setInt(InitPrefsData.coins, getCoins - 10);
+                InitSolveOneBlock();
+            }
+            else
+            {
+                LeanTween.scale(helpButton.gameObject, new Vector2(1.2f, 1.2f), 1f).setEasePunch();
+            }
+
+        });
+    }
+
+    private void InitSolveOneBlock()
+    {
+        foreach (Transform child1 in childArray)
+        {
+            float rotationZ = child1.rotation.eulerAngles.z;
+
+            if (Mathf.Abs(rotationZ) > 0.01f)
+            {
+                Debug.Log("==>Working Rotations");
+                Vector3 rotationEulerAngles = child1.rotation.eulerAngles;
+                rotationEulerAngles.z = 0f;
+                child1.rotation = Quaternion.Euler(rotationEulerAngles);
+                child1.GetComponent<Renderer>().material = imageAlterMaterial;
+                return;
+            }
+        }
+    }
 }

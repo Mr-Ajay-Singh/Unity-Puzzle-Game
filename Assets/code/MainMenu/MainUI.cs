@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -39,23 +40,32 @@ public class MainUI : MonoBehaviour
 
         var nextButton = gameCanvas.transform.Find("NextButton").gameObject.GetComponent<Button>();
         nextButton.onClick.AddListener(() => {
-            nextButton.gameObject.GetComponent<AudioSource>().Play();
+            CommonMusicPlayer.play(nextButton.gameObject.GetComponent<AudioSource>());
             LeanTween.scale(nextButton.gameObject, new Vector2(0.15f, 0.15f), 1f).setEasePunch().setOnComplete(() =>
             {
                 SceneManager.LoadScene(1);
             });
         });
 
+        settingCanvas.gameObject.SetActive(false); 
 
         var settinButton = gameCanvas.transform.Find("Setting").gameObject.GetComponent<Button>();
         settinButton.onClick.AddListener(() => {
-            settinButton.gameObject.GetComponent<AudioSource>().Play();
+            CommonMusicPlayer.play(settinButton.gameObject.GetComponent<AudioSource>());
             settingCanvas.SetActive(true);
             var settingBoard = settingCanvas.transform.Find("SettingBoard").GetComponent<RectTransform>();
             settingBoard.localScale = new Vector2(0.5f, 0.5f);
             LeanTween.scale(settingBoard, new Vector2(1f, 1f), 1f).setEaseInOutQuart();
         });
 
+        InitCoin();
+
+    }
+
+    private void InitCoin()
+    {
+        var coinText = gameCanvas.transform.Find("CoinsCollection").Find("CoinText").GetComponent<TextMeshProUGUI>();
+        coinText.SetText(InitPrefsData.getInt(InitPrefsData.coins,5).ToString());  
 
     }
 

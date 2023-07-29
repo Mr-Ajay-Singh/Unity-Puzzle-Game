@@ -8,7 +8,6 @@ public class PlayMusicOnClick : MonoBehaviour
     private void OnMouseDown()
     {
         AudioSource source = gameObject.GetComponent<AudioSource>();
-        source.Play();
-        Debug.Log("Test Working");
+        CommonMusicPlayer.play(source);
     }
 }
