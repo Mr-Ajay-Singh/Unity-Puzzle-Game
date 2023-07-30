@@ -9,24 +9,25 @@ public static class LevelDefination
 
     public static string getLevel(int value)
     {
-        if(value <= 10)
+        if (value <= 10)
         {
             return "Beginner";
-        }else if(value <= 20)
+        }
+        else if (value <= 20)
         {
-            return "Beginner";
+            return "Intermediate";
         }
         else if (value <= 30)
         {
-            return "Beginner";
+            return "Advanced";
         }
         else if (value <= 40)
         {
-            return "Beginner";
+            return "Expert";
         }
         else if (value <= 50)
         {
-            return "Beginner";
+            return "Master";
         }
 
         return "Beginner";

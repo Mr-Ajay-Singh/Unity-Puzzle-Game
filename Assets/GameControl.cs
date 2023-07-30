@@ -31,7 +31,6 @@ public class GameControl : MonoBehaviour
     public static bool isFirstTimeInitialised;
 
     Transform[] childArray;
-    KeyValuePair<float, float> scoreDone = new KeyValuePair<float, float>(3, 5);
 
     AudioSource audioSource;
 
@@ -57,6 +56,7 @@ public class GameControl : MonoBehaviour
         audioSource = gameObject.GetComponent<AudioSource>();
         audioSource.clip = audioClips[0];
         CommonMusicPlayer.playMusic(audioSource);
+        selectedImageIndex = InitPrefsData.getInt(InitPrefsData.level)-1;
 
         Transform[] internalImage = GetImmediateChildren(value[selectedImageIndex]);
         DisableOtherChildObjects(value[selectedImageIndex],value);
@@ -118,9 +118,9 @@ public class GameControl : MonoBehaviour
 
 
         //StartCoroutine(ScaleRectTransformAnimation());
-        var levelCompleted = InitPrefsData.getInt(InitPrefsData.level) % 10;
+        float levelCompleted = InitPrefsData.getInt(InitPrefsData.level) % 10;
         if (levelCompleted == 0) levelCompleted = 10;
-        LeanTween.scaleX(progress.gameObject, levelCompleted/10, 1f).setEaseInCubic();
+        LeanTween.scaleX(progress.gameObject, levelCompleted /10, 1f).setEaseInCubic();
 
         Debug.Log("==>" + progress.name);
 
@@ -128,32 +128,10 @@ public class GameControl : MonoBehaviour
 
         Debug.Log("==>" + progressText.name);
         progressText.SetText(levelCompleted + " / " + 10);
+        TextMeshProUGUI levelText = gameCanvas.transform.Find("Congratulations").Find("Level").gameObject.GetComponent<TextMeshProUGUI>();
+        levelText.SetText(LevelDefination.getLevel(InitPrefsData.getInt(InitPrefsData.level)));
     }
 
-    private IEnumerator ScaleRectTransformAnimation()
-    {
-        float animationDuration = 1f;
-        Vector2 startScale = progress.localScale;
-        Vector2 targetScale = new Vector2(scoreDone.Key / scoreDone.Value, startScale.y);
-        float elapsedTime = 0f;
-
-        while (elapsedTime < animationDuration)
-        {
-            // Calculate the lerp factor based on the elapsed time
-            float t = elapsedTime / animationDuration;
-
-            // Interpolate between the startScale and targetScale using lerp
-            progress.localScale = Vector3.Lerp(startScale, targetScale, t);
-
-            // Increment the elapsed time
-            elapsedTime += Time.deltaTime;
-
-            yield return null; // Wait for the next frame
-        }
-
-        // Ensure the RectTransform ends up at the exact target scale
-        progress.localScale = targetScale;
-    }
 
     private Transform[] GetImmediateChildren(Transform parentTransform)
     {
@@ -230,8 +208,8 @@ public class GameControl : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
-        selectedImageIndex = selectedImageIndex + 1;
-        InitPrefsData.setInt(InitPrefsData.level, selectedImageIndex);
+        InitPrefsData.setInt(InitPrefsData.level, InitPrefsData.getInt(InitPrefsData.level) + 1);
+        selectedImageIndex = InitPrefsData.getInt(InitPrefsData.level)-1;
         Start();
 
     }
@@ -241,6 +219,7 @@ public class GameControl : MonoBehaviour
 
         helpButton.GetComponent<Button>().onClick.AddListener(() =>
         {
+            CommonMusicPlayer.play(helpButton.GetComponent<AudioSource>());  
             var getCoins = InitPrefsData.getInt(InitPrefsData.level); ;
             InitSolveOneBlock();
             if (getCoins >= 10)

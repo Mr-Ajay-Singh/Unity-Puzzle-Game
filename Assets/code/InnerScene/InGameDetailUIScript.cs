@@ -40,10 +40,16 @@ public class InGameDetailUIScript : MonoBehaviour
         var pauseMenuBoard = gameObject.transform.Find("PauseMenu").Find("Board");
 
         resumeButton.GetComponent<Button>().onClick.AddListener(() => {
-            pauseMenu.gameObject.SetActive(false);
+            CommonMusicPlayer.play(resumeButton.GetComponent<AudioSource>());
+            
+            LeanTween.scale(pauseMenuBoard.gameObject, new Vector2(1f, 1f), 0.2f).setEaseOutBack().setOnComplete(() =>
+            {
+                pauseMenu.gameObject.SetActive(false);
+            });
         });
 
         mainMenuButton.GetComponent<Button>().onClick.AddListener(() => {
+            CommonMusicPlayer.play(mainMenuButton.GetComponent<AudioSource>());
             LeanTween.scale(pauseMenuBoard.gameObject, new Vector2(0.5f, 0.5f), 1f).setEaseOutBack().setOnComplete(() =>
             {
                 SceneManager.LoadScene(0);
@@ -64,6 +70,7 @@ public class InGameDetailUIScript : MonoBehaviour
         pauseButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             pauseMenu.gameObject.SetActive(true);
+            CommonMusicPlayer.play(pauseButton.GetComponent<AudioSource>());
             LeanTween.scale(pauseMenuBoard.gameObject, new Vector2(1.2f, 1.2f), 1f).setEasePunch();
 
         });
