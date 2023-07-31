@@ -17,7 +17,7 @@ public static class InitPrefsData
         }
         if (PlayerPrefs.GetInt(level, -1) == -1)
         {
-            PlayerPrefs.SetInt(level, 20);
+            PlayerPrefs.SetInt(level, 1);
         }
         if (PlayerPrefs.GetInt(isMusicOn, -1) == -1)
         {

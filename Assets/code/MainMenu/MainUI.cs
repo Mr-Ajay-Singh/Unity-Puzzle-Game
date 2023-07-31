@@ -14,6 +14,12 @@ public class MainUI : MonoBehaviour
     [SerializeField]
     GameObject settingCanvas;
 
+    private void Awake()
+    {
+        PlayerPrefs.DeleteAll();
+        InitPrefsData.initPrefs();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
