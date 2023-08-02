@@ -50,7 +50,6 @@ public class GameControl : MonoBehaviour
 
     void Start(){
 
-
         
         Transform[] value = GetImmediateChildren(parentObject.transform);
         audioSource = gameObject.GetComponent<AudioSource>();
@@ -61,7 +60,7 @@ public class GameControl : MonoBehaviour
         Transform[] internalImage = GetImmediateChildren(value[selectedImageIndex]);
         DisableOtherChildObjects(value[selectedImageIndex],value);
 
-
+        MakeUIScalable(value[selectedImageIndex]);
         childArray = GetImmediateChildren(internalImage[0]);
 
         gameCanvas.SetActive(false);
@@ -78,6 +77,12 @@ public class GameControl : MonoBehaviour
         ClickListner();
         InitialiseAnimator();
         //GameCanvasActions();
+    }
+
+    private void MakeUIScalable(Transform tfm)
+    {
+        var screenWidth = Screen.width;
+        var width = tfm.GetComponent<RectTransform>();
     }
 
     void Update(){
